@@ -101,4 +101,3 @@ module core.Base where
     → Set (ℓ-max ℓ₀ ℓ₁)
   _∼_ f g = ∀ x → f x ≡ g x
 
-
