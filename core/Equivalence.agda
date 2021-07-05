@@ -1,4 +1,4 @@
-{-# OPTIONS --rewriting #-}
+{-# OPTIONS --without-K --rewriting #-}
 
 open import core.Base
 open import core.Path
