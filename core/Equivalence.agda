@@ -25,7 +25,9 @@ module core.Equivalence where
   _≃_ : ∀ {ℓ₀ ℓ₁} (X : Set ℓ₀) (Y : Set ℓ₁) → Set (ℓ-max ℓ₀ ℓ₁)
   X ≃ Y = Σ (X → Y) is-equiv 
 
-  equiv-of : ∀ {ℓ₀ ℓ₁} {A : Type ℓ₀} {B : Type ℓ₁} {f : A → B} (e : is-equiv f) → A ≃ B
+  equiv-of : ∀ {ℓ₀ ℓ₁} {A : Type ℓ₀} {B : Type ℓ₁}
+    → {f : A → B} (e : is-equiv f)
+    → A ≃ B
   equiv-of {f = f} e = f , e
 
   qinv : ∀ {ℓ₀ ℓ₁} {A : Set ℓ₀} {B : Set ℓ₁}
@@ -41,6 +43,19 @@ module core.Equivalence where
   coe-is-equiv : ∀ {ℓ} {A B : Type ℓ} (p : A ≡ B) → is-equiv (coe p)
   coe-is-equiv refl = id-is-equiv
 
+  ∘-is-equiv : ∀ {ℓ₀ ℓ₁ ℓ₂} {A : Type ℓ₀} {B : Type ℓ₁} {C : Type ℓ₂}
+    → {f : A → B} {g : B → C}
+    → is-equiv f → is-equiv g
+    → is-equiv (g ∘ f)
+  gl (∘-is-equiv f≃ g≃) = gl f≃ ∘ gl g≃  
+  gr (∘-is-equiv f≃ g≃) = gr f≃ ∘ gr g≃
+  gl-f (∘-is-equiv {f = f} f≃ g≃) a = ap (gl f≃) (gl-f g≃ (f a)) ∙ gl-f f≃ a
+  f-gr (∘-is-equiv {g = g} f≃ g≃) c = ap g (f-gr f≃ (gr g≃ c)) ∙ f-gr g≃ c
+
+  --
+  --  Equivalence projecions
+  --
+  
   ≃→ : ∀ {ℓ₀ ℓ₁} {A : Type ℓ₀} {B : Type ℓ₁}
     → A ≃ B → A → B
   ≃→ (f , _) = f
@@ -73,20 +88,27 @@ module core.Equivalence where
   -- ≃←-inj : ∀ {ℓ₀ ℓ₁} {A : Type ℓ₀} {B : Type ℓ₁} (E : A ≃ B) {x y : B} → ≃← E x ≡ ≃← E y → x ≡ y
   -- ≃←-inj E p = ! ≃ε E _ ∙ ap (≃→ E) p ∙ ≃ε E _
 
-  ≃-refl : ∀ {i} {A : Type i} → A ≃ A
+  ≃-refl : ∀ {ℓ} {A : Type ℓ}
+    → A ≃ A
   ≃-refl = equiv-of id-is-equiv
 
-  -- ≃-trans : ∀ {i j k} {A : Type i} {B : Type j} {C : Type k} → A ≃ B → B ≃ C → A ≃ C
-  -- ≃-trans (f , f≃) (g , g≃) = (g ∘ f) , (∘-is-equiv f≃ g≃)
+  ≃-trans : ∀ {ℓ₀ ℓ₁ ℓ₂} {A : Type ℓ₀} {B : Type ℓ₁} {C : Type ℓ₂}
+    → A ≃ B → B ≃ C
+    → A ≃ C
+  ≃-trans (f , f≃) (g , g≃) = (g ∘ f) , (∘-is-equiv f≃ g≃)
 
-  -- infix  15 _≃∎
-  -- infixr 10 _≃⟨_⟩_
+  infix  15 _≃∎
+  infixr 10 _≃⟨_⟩_
 
-  -- _≃⟨_⟩_ : ∀ {i j k} (A : Type i) {B : Type j} {C : Type k} → A ≃ B → B ≃ C → A ≃ C
-  -- A ≃⟨ e ⟩ e' = ≃-trans e e'
+  _≃⟨_⟩_ : ∀ {ℓ₀ ℓ₁ ℓ₂} (A : Type ℓ₀) {B : Type ℓ₁} {C : Type ℓ₂}
+    → A ≃ B → B ≃ C
+    → A ≃ C
+  A ≃⟨ e ⟩ e' = ≃-trans e e'
 
-  -- _≃∎ : ∀ {i} (A : Type i) → A ≃ A
-  -- _ ≃∎ = ≃-refl
+  _≃∎ : ∀ {ℓ} (A : Type ℓ)
+    → A ≃ A
+  _ ≃∎ = ≃-refl
+
 
   -- ≃η-trans : ∀ {i j k} {A : Type i} {B : Type j} {C : Type k} (E : A ≃ B) (F : B ≃ C) (x : A) → ≃η (≃-trans E F) x ≡ trans (ap (≃← E) (≃η F (≃→ E x))) (≃η E x)
   -- ≃η-trans E F x = refl
