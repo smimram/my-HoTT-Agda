@@ -30,6 +30,13 @@ module core.Equivalence where
     → A ≃ B
   equiv-of {f = f} e = f , e
 
+  ≃-gl≡gr : ∀ {ℓ₀ ℓ₁} {A : Type ℓ₀} {B : Type ℓ₁}
+    → {f : A → B} (e : is-equiv f)
+    → (b : B) → gl e b ≡ gr e b
+  ≃-gl≡gr {f = f} e b = gl e b  ≡⟨ ! (ap (gl e) (f-gr e b)) ⟩
+                        gl e (f (gr e b)) ≡⟨ gl-f e (gr e b) ⟩ 
+                        gr e b ≡∎ 
+
   qinv : ∀ {ℓ₀ ℓ₁} {A : Set ℓ₀} {B : Set ℓ₁}
     → (f : A → B) (g : B → A)
     → (η : (a : A) → g (f a) ≡ a)
@@ -69,10 +76,10 @@ module core.Equivalence where
     → ≃← E ((≃→ E) x) ≡ x
   ≃η (_ , e) = is-equiv.gl-f e
 
-  -- ≃ε : ∀ {ℓ₀ ℓ₁} {A : Type ℓ₀} {B : Type ℓ₁}
-  --   → (E : A ≃ B) (x : B)
-  --   → ≃→ E ((≃← E) x) ≡ x
-  -- ≃ε (_ , e) = {!is-equiv.f-gr e!}
+  ≃ε : ∀ {ℓ₀ ℓ₁} {A : Type ℓ₀} {B : Type ℓ₁}
+    → (E : A ≃ B) (x : B)
+    → ≃→ E ((≃← E) x) ≡ x
+  ≃ε (f , e) b = ap f (≃-gl≡gr e b) ∙ is-equiv.f-gr e b
 
   -- ≃c : ∀ {ℓ₀ ℓ₁} {A : Type ℓ₀} {B : Type ℓ₁} (E : A ≃ B) (x : A) → ap (≃→ E) (≃η E x) ≡ ≃ε E (≃→ E x)
   -- ≃c (_ , e) = {!!}
@@ -80,7 +87,6 @@ module core.Equivalence where
 
   -- -- ≃d : ∀ {i j} {A : Type i} {B : Type j} (E : A ≃ B) (x : B) → ap (≃← E) (≃ε E x) ≡ ≃η E (≃← E x)
   -- -- ≃d (_ , e) = {!!}
-
 
   -- ≃→-inj : ∀ {ℓ₀ ℓ₁} {A : Type ℓ₀} {B : Type ℓ₁} (E : A ≃ B) {x y : A} → ≃→ E x ≡ ≃→ E y → x ≡ y
   -- ≃→-inj E {x} {y} p = ! ≃η E x ∙ ap (≃← E) p ∙ ≃η E y
@@ -109,21 +115,19 @@ module core.Equivalence where
     → A ≃ A
   _ ≃∎ = ≃-refl
 
-
   -- ≃η-trans : ∀ {i j k} {A : Type i} {B : Type j} {C : Type k} (E : A ≃ B) (F : B ≃ C) (x : A) → ≃η (≃-trans E F) x ≡ trans (ap (≃← E) (≃η F (≃→ E x))) (≃η E x)
   -- ≃η-trans E F x = refl
 
-  -- qinv : ∀ {i j} {A : Type i} {B : Type j} (f : A → B) (g : B → A) → (g ∘ f) ∼ id → (f ∘ g) ∼ id → A ≃ B
-  -- qinv f g η ε = f , (qinv-to-equiv (g , η , ε))
+  ≃-sym : ∀ {ℓ₀ ℓ₁} {A : Type ℓ₀} {B : Type ℓ₁}
+    → A ≃ B → B ≃ A
+  ≃-sym E = qinv (≃← E) (≃→ E) (≃ε E) (≃η E)
 
-  -- ≃-sym : ∀ {i j} {A : Type i} {B : Type j} → A ≃ B → B ≃ A
-  -- ≃-sym E = qinv (≃← E) (≃→ E) (≃ε E) (≃η E)
+  ≃-sym-refl : ∀ {ℓ} {A : Type ℓ}
+    → ≃-sym (≃-refl {A = A}) ≡ ≃-refl
+  ≃-sym-refl = refl
 
-  -- ≃-sym-refl : ∀ {i} {A : Type i} → ≃-sym (≃-refl {A = A}) ≡ ≃-refl
-  -- ≃-sym-refl = refl
-
-  -- id-to-equiv : ∀ {i} {A B : Type i} → (A ≡ B) → (A ≃ B)
-  -- id-to-equiv p = coe p , coe-is-equiv p
+  id-to-equiv : ∀ {ℓ} {A B : Type ℓ} → (A ≡ B) → (A ≃ B)
+  id-to-equiv p = coe p , coe-is-equiv p
 
   -- id-to-equiv-∙ : ∀ {i} {A B C : Type i} (p : A ≡ B) (q : B ≡ C) → id-to-equiv (p ∙ q) ≡ ≃-trans (id-to-equiv p) (id-to-equiv q)
   -- id-to-equiv-∙ refl refl = refl

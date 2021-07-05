@@ -153,9 +153,21 @@ module core.Path where
     → ! (p ∙ q) ≡ ! q ∙ ! p
   ∙-sym refl refl = refl 
 
+  --
+  --  Equational Reasoning
+  --
 
+  infixr 10 _≡⟨_⟩_
+  infix  15 _≡∎
 
+  _≡⟨_⟩_ : ∀ {ℓ} {A : Type ℓ} (x : A) {y z : A}
+    → x ≡ y → y ≡ z
+    → x ≡ z
+  _ ≡⟨ p ⟩ q = p ∙ q
 
+  _≡∎ : ∀ {i} {A : Type i} (x : A)
+    → x ≡ x
+  _ ≡∎ = refl
 
   -- ap-∙ : ∀ {i j} {A : Type i} {B : Type j} (f : A → B) {x y z : A} (p : x ≡ y) (q : y ≡ z) → ap f (p ∙ q) ≡ ap f p ∙ ap f q
   -- ap-∙ f refl q = refl
