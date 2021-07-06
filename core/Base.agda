@@ -55,6 +55,10 @@ module core.Base where
   
   data ∅ {ℓ} : Set ℓ where
 
+  infix 100 ¬_
+  
+  ¬_ : ∀ {ℓ} → Set ℓ → Set ℓ
+  ¬_ {ℓ} X = X → ∅ {ℓ}
 
   --
   -- The Unit type
@@ -74,9 +78,8 @@ module core.Base where
 
   {-# BUILTIN EQUALITY _≡_ #-}
 
-
-  
-
+  _≠_ : ∀ {ℓ} {A : Set ℓ} (a b : A) → Set ℓ
+  a ≠ b = ¬ (a ≡ b)
 
   --
   --  Function primitives

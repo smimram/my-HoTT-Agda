@@ -5,11 +5,13 @@ module MiniHoTT where
 open import core.Base public
 open import core.Path public
 open import core.PathOver public
-open import core.NType
+open import core.NType public
 open import core.Equivalence public
+open import core.Decidable public
 
 open import core.FinType public
 open import core.Join public
+open import core.Coproduct public
 
 -- open import HoTT.Univalence public
 -- open import HoTT.Level public
