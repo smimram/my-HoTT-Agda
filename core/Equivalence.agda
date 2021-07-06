@@ -13,7 +13,8 @@ module core.Equivalence where
       f-gr : (b : B) → f (gr b) ≡ b
 
   open is-equiv public
-  
+
+  -- This should not have an "is" prefix, since it is not a prop
   is-qinv : ∀ {ℓ₀ ℓ₁} {A : Set ℓ₀} {B : Set ℓ₁} → (A → B) → Set (ℓ-max ℓ₀ ℓ₁)
   is-qinv {A = A} {B = B} f = Σ (B → A) (λ g → (g ∘ f) ∼ id × (f ∘ g) ∼ id)
 
